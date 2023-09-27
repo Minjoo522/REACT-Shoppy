@@ -54,7 +54,7 @@ export default function Header() {
         </Link>
         {isLogin ? (
           <div className='flex items-center gap-1.5'>
-            <img src={userData.photoURL} alt={`${userData.displayName} 프로필 사진`} />
+            <img className='rounded-full w-8 h-8' src={userData.photoURL} alt={`${userData.displayName} 프로필 사진`} />
             <span>{userData.displayName}</span>
           </div>
         ) : (
