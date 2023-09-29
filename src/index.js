@@ -9,6 +9,7 @@ import Products from './pages/Products';
 import ProductDetail from './pages/ProductDetail';
 import ShoppingCart from './pages/ShoppingCart';
 import NewProducts from './pages/NewProducts';
+import RequireAdmin from './context/RequireAdmin';
 
 const router = createBrowserRouter([
   {
@@ -18,7 +19,14 @@ const router = createBrowserRouter([
     children: [
       { index: true, element: <Products /> },
       { path: 'products', element: <Products /> },
-      { path: 'products/new', element: <NewProducts /> },
+      {
+        path: 'products/new',
+        element: (
+          <RequireAdmin>
+            <NewProducts />
+          </RequireAdmin>
+        ),
+      },
       { path: 'products/:productId', element: <ProductDetail /> },
       { path: 'carts', element: <ShoppingCart /> },
     ],
