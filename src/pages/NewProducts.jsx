@@ -1,15 +1,17 @@
 import React, { useState } from 'react';
+import ImgInput from '../components/ImgInput';
+import { uploadImage } from '../service/uploader';
 
 export default function NewProducts() {
-  const [imgFile, setImgFile] = useState('');
+  const [imgFile, setImgFile] = useState(null);
   const [itemName, setItemName] = useState('');
   const [price, setPrice] = useState('');
   const [category, setCategory] = useState('');
   const [info, setInfo] = useState('');
   const [options, setOptions] = useState('');
 
-  const handleFileChange = (e) => {
-    setImgFile(e.target.value);
+  const handleImageChange = (imageData) => {
+    setImgFile(imageData);
   };
 
   const handleItemNameChange = (e) => {
@@ -34,14 +36,17 @@ export default function NewProducts() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    uploadImage(imgFile).then((url) => {
+      console.log(url);
+    });
   };
 
   return (
     <main className='w-full flex flex-col items-center'>
       <h2 className='font-bold text-2xl mb-8'>신제품 등록</h2>
       <form className='flex flex-col gap-4 w-6/12 drop-shadow-md' onSubmit={handleSubmit}>
-        {/* TODO: img 업로드 컴포넌트 분리 */}
-        <input type='file' name='file' id='file' value={imgFile} onChange={handleFileChange} />
+        {imgFile && <img src={imgFile} alt='선택된 이미지 사진' />}
+        <ImgInput onImageChange={handleImageChange} />
         <input
           type='text'
           name='itemName'
