@@ -1,80 +1,94 @@
 import React, { useState } from 'react';
-import ImgInput from '../components/ImgInput';
 import { uploadImage } from '../service/uploader';
+import { addNewProduct } from '../service/firebase';
 
 export default function NewProducts() {
-  const [imgFile, setImgFile] = useState(null);
-  const [itemName, setItemName] = useState('');
-  const [price, setPrice] = useState('');
-  const [category, setCategory] = useState('');
-  const [info, setInfo] = useState('');
-  const [options, setOptions] = useState('');
+  const [file, setFIle] = useState();
+  const [product, setProduct] = useState({});
+  const [isUploading, setIsUploading] = useState(false);
+  const [success, setSuccess] = useState();
 
-  const handleImageChange = (imageData) => {
-    setImgFile(imageData);
-  };
-
-  const handleItemNameChange = (e) => {
-    setItemName(e.target.value);
-  };
-
-  const handlePriceChange = (e) => {
-    setPrice(e.target.value);
-  };
-
-  const handleCategoryChange = (e) => {
-    setCategory(e.target.value);
-  };
-
-  const handleInfoChange = (e) => {
-    setInfo(e.target.value);
-  };
-
-  const handleOptionsChange = (e) => {
-    setOptions(e.target.value);
+  const handleChange = (e) => {
+    const { name, value, files } = e.target;
+    if (name === 'file') {
+      setFIle(files && files[0]);
+      return;
+    }
+    setProduct((product) => ({ ...product, [name]: value }));
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    uploadImage(imgFile).then((url) => {
-      console.log(url);
-    });
+    setIsUploading(true);
+    uploadImage(file)
+      .then((url) => {
+        addNewProduct(product, url).then(() => {
+          setSuccess('성공적으로 제품이 추가되었습니다.');
+          setTimeout(() => {
+            setSuccess(null);
+          }, 4000);
+        });
+      })
+      .finally(() => setIsUploading(false));
   };
 
   return (
     <main className='w-full flex flex-col items-center'>
       <h2 className='font-bold text-2xl mb-8'>신제품 등록</h2>
+      {success && <p>✅ {success}</p>}
       <form className='flex flex-col gap-4 w-6/12 drop-shadow-md' onSubmit={handleSubmit}>
-        {imgFile && <img src={imgFile} alt='선택된 이미지 사진' />}
-        <ImgInput onImageChange={handleImageChange} />
+        {file && <img src={URL.createObjectURL(file)} alt='선택된 이미지 사진' />}
+        <input type='file' accept='image/*' name='file' id='file' required onChange={handleChange} />
         <input
           type='text'
           name='itemName'
           id='itemName'
-          value={itemName}
+          value={product.itemName ?? ''}
           placeholder='제품명'
-          onChange={handleItemNameChange}
+          required
+          onChange={handleChange}
         />
-        <input type='text' name='price' id='price' value={price} placeholder='가격' onChange={handlePriceChange} />
+        <input
+          type='number'
+          name='price'
+          id='price'
+          value={product.price ?? ''}
+          placeholder='가격'
+          required
+          onChange={handleChange}
+        />
         <input
           type='text'
           name='category'
           id='category'
-          value={category}
+          value={product.category ?? ''}
           placeholder='카테고리'
-          onChange={handleCategoryChange}
+          required
+          onChange={handleChange}
         />
-        <input type='text' name='info' id='info' value={info} placeholder='제품 설명' onChange={handleInfoChange} />
+        <input
+          type='text'
+          name='info'
+          id='info'
+          value={product.info ?? ''}
+          placeholder='제품 설명'
+          required
+          onChange={handleChange}
+        />
         <input
           type='text'
           name='options'
           id='options'
           placeholder='옵션들(콤마(,)로 구분)'
-          value={options}
-          onChange={handleOptionsChange}
+          value={product.options ?? ''}
+          required
+          onChange={handleChange}
         />
-        <button type='submit' className='px-4 py-1.5 bg-brand text-white rounded w-fit m-auto mt-4 text-xl font-bold'>
-          제품 등록
+        <button
+          type='submit'
+          disabled={isUploading}
+          className='px-4 py-1.5 bg-brand text-white rounded w-fit m-auto mt-4 text-xl font-bold'>
+          {isUploading ? '업로드 중...' : '제품 등록하기'}
         </button>
       </form>
     </main>
