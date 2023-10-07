@@ -37,7 +37,7 @@ export default function NewProducts() {
       <h2 className='font-bold text-2xl mb-8'>신제품 등록</h2>
       {success && <p>✅ {success}</p>}
       <form className='flex flex-col gap-4 w-6/12 drop-shadow-md' onSubmit={handleSubmit}>
-        {file && <img src={URL.createObjectURL(file)} alt='선택된 이미지 사진' />}
+        {file && <img className='w-64' src={URL.createObjectURL(file)} alt='선택된 이미지 사진' />}
         <input type='file' accept='image/*' name='file' id='file' required onChange={handleChange} />
         <input
           type='text'
@@ -49,6 +49,7 @@ export default function NewProducts() {
           onChange={handleChange}
         />
         <input
+          className='p-2 outline-none border rounded-lg border-gray-300'
           type='number'
           name='price'
           id='price'
